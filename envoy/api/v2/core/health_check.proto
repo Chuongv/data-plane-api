@@ -55,7 +55,7 @@ enum HealthStatus {
   DEGRADED = 5;
 }
 
-// [#next-free-field: 23]
+// [#next-free-field: 24]
 message HealthCheck {
   // Describes the encoding of the payload bytes in the payload.
   message Payload {
@@ -305,4 +305,15 @@ message HealthCheck {
 
   // This allows overriding the cluster TLS settings, just for health check connections.
   TlsOptions tls_options = 21;
+
+  // The "no traffic healthy interval" is a special health check interval that is used when a cluster has
+  // never had traffic routed to it but is a healthy cluster.
+  // This lower interval allows cluster information to be kept up to
+  // date, without sending a potentially large amount of active health checking traffic for no
+  // reason. Once a cluster has been used for traffic routing, Envoy will shift back to using the
+  // standard health check interval that is defined.
+
+  // If no_traffic_healthy_interval is set, it will default to the
+  // no traffic interval
+  google.protobuf.Duration no_traffic_healthy_interval = 23 [(validate.rules).duration = {gt {}}];
 }
